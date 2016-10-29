@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4DEBD86D1DC4ED7A00D93822 /* JSONCodingTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DEBD86C1DC4ED7A00D93822 /* JSONCodingTypes.swift */; };
 		BB75A9631DB7B16A007A231F /* JSON.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BB75A9591DB7B16A007A231F /* JSON.framework */; };
 		BB75A9681DB7B16A007A231F /* JSONTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB75A9671DB7B16A007A231F /* JSONTests.swift */; };
 		BB75A96A1DB7B16A007A231F /* JSON.h in Headers */ = {isa = PBXBuildFile; fileRef = BB75A95C1DB7B16A007A231F /* JSON.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -25,6 +26,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		4DEBD86C1DC4ED7A00D93822 /* JSONCodingTypes.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JSONCodingTypes.swift; sourceTree = "<group>"; };
 		BB75A9591DB7B16A007A231F /* JSON.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = JSON.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		BB75A95C1DB7B16A007A231F /* JSON.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSON.h; sourceTree = "<group>"; };
 		BB75A95D1DB7B16A007A231F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -79,6 +81,7 @@
 				BB75A95D1DB7B16A007A231F /* Info.plist */,
 				BB75A9731DB7B17D007A231F /* JSON.swift */,
 				BB75A9751DB7B185007A231F /* JSONCoding.swift */,
+				4DEBD86C1DC4ED7A00D93822 /* JSONCodingTypes.swift */,
 			);
 			path = JSON;
 			sourceTree = "<group>";
@@ -207,6 +210,7 @@
 			files = (
 				BB75A9741DB7B17D007A231F /* JSON.swift in Sources */,
 				BB75A9761DB7B185007A231F /* JSONCoding.swift in Sources */,
+				4DEBD86D1DC4ED7A00D93822 /* JSONCodingTypes.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -417,6 +421,7 @@
 				BB75A96F1DB7B16A007A231F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		BB75A9701DB7B16A007A231F /* Build configuration list for PBXNativeTarget "JSONTests" */ = {
 			isa = XCConfigurationList;
@@ -425,6 +430,7 @@
 				BB75A9721DB7B16A007A231F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

@@ -130,8 +130,8 @@ extension CGSize: JSONEncoding, JSONDecoding {
         return json
     }
     public init(jsonValue: JSON) throws {
-        self.width = try JSONDecoder.decode(jsonValue["width"])
-        self.height = try JSONDecoder.decode(jsonValue["height"])
+        self.width = try JSONDecoder.decode(jsonValue["w"])
+        self.height = try JSONDecoder.decode(jsonValue["h"])
     }
 }
 

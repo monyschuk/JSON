@@ -17,12 +17,9 @@ extension Int: JSONEncoding, JSONDecoding {
         if let value = jsonValue.asInt {
             self = value
         } else {
-            throw JSONDecodingError.incorrectValueType(jsonValue)
+            throw JSONDecodingError.unrecognizedValue(jsonValue)
         }
     }
-
-    public static let encoder = JSONEncoderOf<Int>()
-    public static let decoder = JSONDecoderOf<Int>()
 }
 
 extension Float: JSONEncoding, JSONDecoding {
@@ -34,12 +31,9 @@ extension Float: JSONEncoding, JSONDecoding {
         if let value = jsonValue.asFloat {
             self = value
         } else {
-            throw JSONDecodingError.incorrectValueType(jsonValue)
+            throw JSONDecodingError.unrecognizedValue(jsonValue)
         }
     }
-
-    public static let encoder = JSONEncoderOf<Float>()
-    public static let decoder = JSONDecoderOf<Float>()
 }
 
 extension CGFloat: JSONEncoding, JSONDecoding {
@@ -51,12 +45,9 @@ extension CGFloat: JSONEncoding, JSONDecoding {
         if let value = jsonValue.asCGFloat {
             self = value
         } else {
-            throw JSONDecodingError.incorrectValueType(jsonValue)
+            throw JSONDecodingError.unrecognizedValue(jsonValue)
         }
     }
-
-    public static let encoder = JSONEncoderOf<CGFloat>()
-    public static let decoder = JSONDecoderOf<CGFloat>()
 }
 
 extension Double: JSONEncoding, JSONDecoding {
@@ -68,12 +59,9 @@ extension Double: JSONEncoding, JSONDecoding {
         if let value = jsonValue.asDouble {
             self = value
         } else {
-            throw JSONDecodingError.incorrectValueType(jsonValue)
+            throw JSONDecodingError.unrecognizedValue(jsonValue)
         }
     }
-
-    public static let encoder = JSONEncoderOf<Double>()
-    public static let decoder = JSONDecoderOf<Double>()
 }
 
 extension Bool: JSONEncoding, JSONDecoding {
@@ -85,12 +73,9 @@ extension Bool: JSONEncoding, JSONDecoding {
         if let value = jsonValue.asBool {
             self = value
         } else {
-            throw JSONDecodingError.incorrectValueType(jsonValue)
+            throw JSONDecodingError.unrecognizedValue(jsonValue)
         }
     }
-
-    public static let encoder = JSONEncoderOf<Bool>()
-    public static let decoder = JSONDecoderOf<Bool>()
 }
 
 extension String: JSONEncoding, JSONDecoding {
@@ -102,12 +87,9 @@ extension String: JSONEncoding, JSONDecoding {
         if let value = jsonValue.asString {
             self = value
         } else {
-            throw JSONDecodingError.incorrectValueType(jsonValue)
+            throw JSONDecodingError.unrecognizedValue(jsonValue)
         }
     }
-
-    public static let encoder = JSONEncoderOf<String>()
-    public static let decoder = JSONDecoderOf<String>()
 }
 
 extension Data: JSONEncoding, JSONDecoding {
@@ -118,12 +100,9 @@ extension Data: JSONEncoding, JSONDecoding {
         if let value = jsonValue.asString, let dataValue = Data(base64Encoded: value) {
             self = dataValue
         } else {
-            throw JSONDecodingError.incorrectValueType(jsonValue)
+            throw JSONDecodingError.unrecognizedValue(jsonValue)
         }
     }
-
-    public static let encoder = JSONEncoderOf<Data>()
-    public static let decoder = JSONDecoderOf<Data>()
 }
 
 extension CGPoint: JSONEncoding, JSONDecoding {
@@ -136,12 +115,9 @@ extension CGPoint: JSONEncoding, JSONDecoding {
         return json
     }
     public init(jsonValue: JSON) throws {
-        self.x = try jsonValue["x"].decode(using: CGFloat.decoder)
-        self.y = try jsonValue["y"].decode(using: CGFloat.decoder)
+        self.x = try JSONDecoder.decode(jsonValue["x"])
+        self.y = try JSONDecoder.decode(jsonValue["y"])
     }
-
-    public static let encoder = JSONEncoderOf<CGPoint>()
-    public static let decoder = JSONDecoderOf<CGPoint>()
 }
 
 extension CGSize: JSONEncoding, JSONDecoding {
@@ -154,12 +130,9 @@ extension CGSize: JSONEncoding, JSONDecoding {
         return json
     }
     public init(jsonValue: JSON) throws {
-        self.width = try jsonValue["width"].decode(using: CGFloat.decoder)
-        self.height = try jsonValue["height"].decode(using: CGFloat.decoder)
+        self.width = try JSONDecoder.decode(jsonValue["width"])
+        self.height = try JSONDecoder.decode(jsonValue["height"])
     }
-
-    public static let encoder = JSONEncoderOf<CGSize>()
-    public static let decoder = JSONDecoderOf<CGSize>()
 }
 
 extension CGVector: JSONEncoding, JSONDecoding {
@@ -171,9 +144,10 @@ extension CGVector: JSONEncoding, JSONDecoding {
 
         return json
     }
+    
     public init(jsonValue: JSON) throws {
-        dx = try jsonValue["dx"].decode(using: CGFloat.decoder)
-        dy = try jsonValue["dy"].decode(using: CGFloat.decoder)
+        self.dx = try JSONDecoder.decode(jsonValue["dx"])
+        self.dy = try JSONDecoder.decode(jsonValue["dy"])
     }
 }
 
@@ -188,19 +162,17 @@ extension CGRect: JSONEncoding, JSONDecoding {
 
         return json
     }
+    
     public init(jsonValue: JSON) throws {
-        origin = CGPoint(
-            x:      try jsonValue["x"].decode(using: CGFloat.decoder),
-            y:      try jsonValue["y"].decode(using: CGFloat.decoder)
+        self.origin = CGPoint(
+            x:      try JSONDecoder.decode(jsonValue["x"]) as CGFloat,
+            y:      try JSONDecoder.decode(jsonValue["y"])
         )
-        size   = CGSize(
-            width:  try jsonValue["w"].decode(using: CGFloat.decoder),
-            height: try jsonValue["h"].decode(using: CGFloat.decoder)
+        self.size   = CGSize(
+            width:  try JSONDecoder.decode(jsonValue["w"]) as CGFloat,
+            height: try JSONDecoder.decode(jsonValue["h"])
         )
     }
-
-    public static let encoder = JSONEncoderOf<CGRect>()
-    public static let decoder = JSONDecoderOf<CGRect>()
 }
 
 extension EdgeInsets: JSONEncoding, JSONDecoding {
@@ -215,12 +187,9 @@ extension EdgeInsets: JSONEncoding, JSONDecoding {
         return json
     }
     public init(jsonValue: JSON) throws {
-        top     = try jsonValue["t"].decode(using: CGFloat.decoder)
-        left    = try jsonValue["l"].decode(using: CGFloat.decoder)
-        right   = try jsonValue["r"].decode(using: CGFloat.decoder)
-        bottom  = try jsonValue["b"].decode(using: CGFloat.decoder)
+        self.top     = try JSONDecoder.decode(jsonValue["t"])
+        self.left    = try JSONDecoder.decode(jsonValue["l"])
+        self.right   = try JSONDecoder.decode(jsonValue["r"])
+        self.bottom  = try JSONDecoder.decode(jsonValue["b"])
     }
-
-    public static let encoder = JSONEncoderOf<EdgeInsets>()
-    public static let decoder = JSONDecoderOf<EdgeInsets>()
 }

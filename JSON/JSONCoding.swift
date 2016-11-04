@@ -17,228 +17,102 @@ public protocol JSONDecoding {
     init(jsonValue: JSON) throws
 }
 
+public protocol JSONCoding: JSONEncoding, JSONDecoding {}
+
 public enum JSONDecodingError: Error {
     case unrecognizedKey(String)
-    case incorrectValueType(JSON)
+    case unrecognizedValue(JSON)
 }
 
-public struct JSONEncoderOf<T> {
-    public var encode: (T)->JSON
+public struct JSONObjectMap {
+    public let key:    String
+    public let values: [String: JSONCoding.Type]
+    
+    public init(key: String, values: [String:JSONCoding.Type]) {
+        self.key = key
+        self.values = values
+    }
 }
 
-extension JSONEncoderOf where T: JSONEncoding {
-    public init() {
-        encode = { item in
-            item.jsonValue()
-        }
+public struct JSONEncoder {
+    public static func encode<T: JSONEncoding>(_ item: T) -> JSON {
+        return item.jsonValue()
     }
     
-    public func polymorphically(key: String, map: [String:T.Type]) -> JSONEncoderOf {
-        return JSONEncoderOf<T> { item in
-            let type = Mirror(reflecting:item).subjectType
-            let value = map.first(where:{ $0.value == type })?.key
-            
-            var json = item.jsonValue()
-            if let value = value {
-                json[key] = .string(value)
-            }
-            return json
-        }
-    }
-}
-
-extension JSONEncoderOf {
-    public func zeroOrMore() -> JSONEncoderOf<[T]> {
-        return JSONEncoderOf<[T]> { item in
-            return .array(item.map { self.encode($0) })
-        }
+    public static func encode<T: JSONEncoding>(_ items: [T]) -> JSON {
+        return JSON.array(items.map { $0.jsonValue() })
     }
     
-    public func orNil() -> JSONEncoderOf<T?> {
-        return JSONEncoderOf<T?> { item in
-            if let item = item {
-                return self.encode(item)
-            } else {
-                return .null
+    public static func encode<T: JSONEncoding>(_ dict: [String:T]) -> JSON {
+        var encoded = [String:JSON]()
+        for (k, v) in dict {
+            encoded[k] = v.jsonValue()
+        }
+        return JSON.object(encoded)
+    }
+    
+    public static func encode(map: JSONObjectMap, item: JSONEncoding) -> JSON {
+        var json = item.jsonValue()
+        let type = Mirror(reflecting: item).subjectType
+        
+        for (key, val) in map.values {
+            if val == type {
+                json[map.key] = .string(key)
+                break
             }
         }
+        return json
+    }
+    
+    public static func encode(map: JSONObjectMap, items: [JSONEncoding]) -> JSON {
+        return .array(items.map { encode(map: map, item: $0) })
     }
 }
 
-public struct JSONDecoderOf<T> {
-    public var decode: (JSON)throws->T
-}
-
-extension JSONDecoderOf where T: JSONDecoding {
-    public init() {
-        decode = { json in
-            try T(jsonValue: json)
+public struct JSONDecoder {
+    public static func decode<T: JSONDecoding>(_ json: JSON) throws -> T {
+        return try T(jsonValue: json)
+    }
+    
+    public static func decode<T: JSONDecoding>(_ json: JSON) throws -> [T] {
+        switch json {
+        case .array(let values):
+            return try values.map { try T(jsonValue: $0) }
+        default:
+            throw JSONDecodingError.unrecognizedValue(json)
         }
     }
     
-    public func polymorphically(key: String, map: [String:T.Type]) -> JSONDecoderOf {
-        return JSONDecoderOf<T> { json in
-            if let value = json[key].asString, let mappedType = map[value] {
-                return try mappedType.init(jsonValue: json)
-            } else {
-                throw JSONDecodingError.incorrectValueType(json)
+    public static func decode<T: JSONDecoding>(_ json: JSON) throws -> [String:T] {
+        switch json {
+        case .object(let dict):
+            var decoded = [String:T]()
+            for (k, v) in dict {
+                decoded[k] = try T(jsonValue: v)
             }
-        }
-    }
-}
-
-extension JSONDecoderOf {
-    public func map<U>(transform: @escaping (T)->U) -> JSONDecoderOf<U> {
-        return JSONDecoderOf<U> { json in
-            transform(try self.decode(json))
+            return decoded
+        default:
+            throw JSONDecodingError.unrecognizedValue(json)
         }
     }
     
-    public func zeroOrMore() -> JSONDecoderOf<[T]> {
-        return JSONDecoderOf<[T]> { json in
-            if let array = json.asArray {
-                return try array.map { try self.decode($0) }
-            } else {
-                throw JSONDecodingError.incorrectValueType(json)
-            }
+    public static func decode(map: JSONObjectMap, object json: JSON) throws -> JSONDecoding {
+        guard let v = json[map.key].asString else {
+            throw JSONDecodingError.unrecognizedKey(map.key)
         }
-    }
-    public func oneOrMore() -> JSONDecoderOf<[T]> {
-        return JSONDecoderOf<[T]> { json in
-            if let array = json.asArray, !array.isEmpty {
-                return try array.map { try self.decode($0) }
-            } else {
-                throw JSONDecodingError.incorrectValueType(json)
-            }
+        guard let type = map.values[v] else {
+            throw JSONDecodingError.unrecognizedKey(map.key)
         }
+        
+        return try type.init(jsonValue: json)
     }
     
-    public func orNil() -> JSONDecoderOf<T?> {
-        return JSONDecoderOf<T?> { json in
-            if json.isNull {
-                return nil
-            } else {
-                return try self.decode(json)
-            }
+    public static func decode(map: JSONObjectMap, array json: JSON) throws -> [JSONDecoding] {
+        switch json {
+        case .array(let values):
+            return try values.map { try decode(map: map, object: $0) }
+        default:
+            throw JSONDecodingError.unrecognizedValue(json)
         }
-    }
-    
-    public func ifNull(use value: T) -> JSONDecoderOf<T> {
-        return JSONDecoderOf<T> { json in
-            if json.isNull {
-                return value
-            } else {
-                return try self.decode(json)
-            }
-        }
-    }
-}
-
-extension Int: JSONEncoding, JSONDecoding {
-    public func jsonValue() -> JSON {
-        return .number(Double(self))
-    }
-    
-    public init(jsonValue: JSON) throws {
-        if let value = jsonValue.asInt {
-            self = value
-        } else {
-            throw JSONDecodingError.incorrectValueType(jsonValue)
-        }
-    }
-    
-    public static let encoder = JSONEncoderOf<Int>()
-    public static let decoder = JSONDecoderOf<Int>()
-}
-
-extension Float: JSONEncoding, JSONDecoding {
-    public func jsonValue() -> JSON {
-        return .number(Double(self))
-    }
-    
-    public init(jsonValue: JSON) throws {
-        if let value = jsonValue.asFloat {
-            self = value
-        } else {
-            throw JSONDecodingError.incorrectValueType(jsonValue)
-        }
-    }
-    
-    public static let encoder = JSONEncoderOf<Float>()
-    public static let decoder = JSONDecoderOf<Float>()
-}
-
-extension CGFloat: JSONEncoding, JSONDecoding {
-    public func jsonValue() -> JSON {
-        return .number(Double(self))
-    }
-    
-    public init(jsonValue: JSON) throws {
-        if let value = jsonValue.asCGFloat {
-            self = value
-        } else {
-            throw JSONDecodingError.incorrectValueType(jsonValue)
-        }
-    }
-    
-    public static let encoder = JSONEncoderOf<CGFloat>()
-    public static let decoder = JSONDecoderOf<CGFloat>()
-}
-
-extension Double: JSONEncoding, JSONDecoding {
-    public func jsonValue() -> JSON {
-        return .number(self)
-    }
-    
-    public init(jsonValue: JSON) throws {
-        if let value = jsonValue.asDouble {
-            self = value
-        } else {
-            throw JSONDecodingError.incorrectValueType(jsonValue)
-        }
-    }
-    
-    public static let encoder = JSONEncoderOf<Double>()
-    public static let decoder = JSONDecoderOf<Double>()
-}
-
-extension Bool: JSONEncoding, JSONDecoding {
-    public func jsonValue() -> JSON {
-        return .bool(self)
-    }
-    
-    public init(jsonValue: JSON) throws {
-        if let value = jsonValue.asBool {
-            self = value
-        } else {
-            throw JSONDecodingError.incorrectValueType(jsonValue)
-        }
-    }
-    
-    public static let encoder = JSONEncoderOf<Bool>()
-    public static let decoder = JSONDecoderOf<Bool>()
-}
-
-extension String: JSONEncoding, JSONDecoding {
-    public func jsonValue() -> JSON {
-        return .string(self)
-    }
-    
-    public init(jsonValue: JSON) throws {
-        if let value = jsonValue.asString {
-            self = value
-        } else {
-            throw JSONDecodingError.incorrectValueType(jsonValue)
-        }
-    }
-    
-    public static let encoder = JSONEncoderOf<String>()
-    public static let decoder = JSONDecoderOf<String>()
-}
-
-extension JSON {
-    // convenience function which makes decoding read a bit more cleanly
-    public func decode<T>(using decoder: JSONDecoderOf<T>) throws -> T {
-        return try decoder.decode(self)
     }
 }

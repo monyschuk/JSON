@@ -39,6 +39,10 @@ public struct JSONEncoder {
         return item.jsonValue()
     }
     
+    public static func encode<T: JSONEncoding>(_ item: T?) -> JSON {
+        return item?.jsonValue() ?? .null
+    }
+
     public static func encode<T: JSONEncoding>(_ items: [T]) -> JSON {
         return JSON.array(items.map { $0.jsonValue() })
     }
@@ -74,6 +78,14 @@ public struct JSONDecoder {
         return try T(jsonValue: json)
     }
     
+    public static func decode<T: JSONDecoding>(_ json: JSON) throws -> T? {
+        if json.isNull {
+            return nil
+        } else {
+            return try T(jsonValue: json)
+        }
+    }
+
     public static func decode<T: JSONDecoding>(_ json: JSON) throws -> [T] {
         switch json {
         case .array(let values):

@@ -12,9 +12,23 @@ extension Int: JSONEncoding, JSONDecoding {
     public func jsonValue() -> JSON {
         return .number(Double(self))
     }
-
+    
     public init(jsonValue: JSON) throws {
         if let value = jsonValue.asInt {
+            self = value
+        } else {
+            throw JSONDecodingError.unrecognizedValue(jsonValue)
+        }
+    }
+}
+
+extension UInt: JSONEncoding, JSONDecoding {
+    public func jsonValue() -> JSON {
+        return .number(Double(self))
+    }
+    
+    public init(jsonValue: JSON) throws {
+        if let value = jsonValue.asUInt {
             self = value
         } else {
             throw JSONDecodingError.unrecognizedValue(jsonValue)
@@ -26,7 +40,7 @@ extension Float: JSONEncoding, JSONDecoding {
     public func jsonValue() -> JSON {
         return .number(Double(self))
     }
-
+    
     public init(jsonValue: JSON) throws {
         if let value = jsonValue.asFloat {
             self = value
@@ -40,7 +54,7 @@ extension CGFloat: JSONEncoding, JSONDecoding {
     public func jsonValue() -> JSON {
         return .number(Double(self))
     }
-
+    
     public init(jsonValue: JSON) throws {
         if let value = jsonValue.asCGFloat {
             self = value
@@ -54,7 +68,7 @@ extension Double: JSONEncoding, JSONDecoding {
     public func jsonValue() -> JSON {
         return .number(self)
     }
-
+    
     public init(jsonValue: JSON) throws {
         if let value = jsonValue.asDouble {
             self = value
@@ -68,7 +82,7 @@ extension Bool: JSONEncoding, JSONDecoding {
     public func jsonValue() -> JSON {
         return .bool(self)
     }
-
+    
     public init(jsonValue: JSON) throws {
         if let value = jsonValue.asBool {
             self = value
@@ -82,7 +96,7 @@ extension String: JSONEncoding, JSONDecoding {
     public func jsonValue() -> JSON {
         return .string(self)
     }
-
+    
     public init(jsonValue: JSON) throws {
         if let value = jsonValue.asString {
             self = value
@@ -108,10 +122,10 @@ extension Data: JSONEncoding, JSONDecoding {
 extension CGPoint: JSONEncoding, JSONDecoding {
     public func jsonValue() -> JSON {
         var json = JSON()
-
+        
         json["x"] = x.jsonValue()
         json["y"] = y.jsonValue()
-
+        
         return json
     }
     public init(jsonValue: JSON) throws {
@@ -123,10 +137,10 @@ extension CGPoint: JSONEncoding, JSONDecoding {
 extension CGSize: JSONEncoding, JSONDecoding {
     public func jsonValue() -> JSON {
         var json = JSON()
-
+        
         json["w"] = width.jsonValue()
         json["h"] = height.jsonValue()
-
+        
         return json
     }
     public init(jsonValue: JSON) throws {
@@ -138,10 +152,10 @@ extension CGSize: JSONEncoding, JSONDecoding {
 extension CGVector: JSONEncoding, JSONDecoding {
     public func jsonValue() -> JSON {
         var json = JSON()
-
+        
         json["dx"] = dx.jsonValue()
         json["dy"] = dy.jsonValue()
-
+        
         return json
     }
     
@@ -154,12 +168,12 @@ extension CGVector: JSONEncoding, JSONDecoding {
 extension CGRect: JSONEncoding, JSONDecoding {
     public func jsonValue() -> JSON {
         var json = JSON()
-
+        
         json["x"] = origin.x.jsonValue()
         json["y"] = origin.y.jsonValue()
         json["w"] = size.width.jsonValue()
         json["h"] = size.height.jsonValue()
-
+        
         return json
     }
     
@@ -178,12 +192,12 @@ extension CGRect: JSONEncoding, JSONDecoding {
 extension EdgeInsets: JSONEncoding, JSONDecoding {
     public func jsonValue() -> JSON {
         var json = JSON()
-
+        
         json["t"] = top.jsonValue()
         json["l"] = left.jsonValue()
         json["r"] = right.jsonValue()
         json["b"] = bottom.jsonValue()
-
+        
         return json
     }
     public init(jsonValue: JSON) throws {

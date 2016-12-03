@@ -177,6 +177,13 @@ extension JSON {
         }
     }
     
+    public var asUInt: UInt? {
+        switch self {
+        case let .number(value):    return UInt(value)
+        default:                    return nil
+        }
+    }
+    
     public var asFloat: Float? {
         switch self {
         case let .number(value):    return Float(value)

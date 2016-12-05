@@ -8,7 +8,7 @@
 
 import Foundation
 
-extension Int: JSONEncoding, JSONDecoding {
+extension Int: JSONCoding {
     public func jsonValue() -> JSON {
         return .number(Double(self))
     }
@@ -22,7 +22,7 @@ extension Int: JSONEncoding, JSONDecoding {
     }
 }
 
-extension UInt: JSONEncoding, JSONDecoding {
+extension UInt: JSONCoding {
     public func jsonValue() -> JSON {
         return .number(Double(self))
     }
@@ -36,7 +36,7 @@ extension UInt: JSONEncoding, JSONDecoding {
     }
 }
 
-extension Float: JSONEncoding, JSONDecoding {
+extension Float: JSONCoding {
     public func jsonValue() -> JSON {
         return .number(Double(self))
     }
@@ -50,7 +50,7 @@ extension Float: JSONEncoding, JSONDecoding {
     }
 }
 
-extension CGFloat: JSONEncoding, JSONDecoding {
+extension CGFloat: JSONCoding {
     public func jsonValue() -> JSON {
         return .number(Double(self))
     }
@@ -64,7 +64,7 @@ extension CGFloat: JSONEncoding, JSONDecoding {
     }
 }
 
-extension Double: JSONEncoding, JSONDecoding {
+extension Double: JSONCoding {
     public func jsonValue() -> JSON {
         return .number(self)
     }
@@ -78,7 +78,7 @@ extension Double: JSONEncoding, JSONDecoding {
     }
 }
 
-extension Bool: JSONEncoding, JSONDecoding {
+extension Bool: JSONCoding {
     public func jsonValue() -> JSON {
         return .bool(self)
     }
@@ -92,7 +92,7 @@ extension Bool: JSONEncoding, JSONDecoding {
     }
 }
 
-extension String: JSONEncoding, JSONDecoding {
+extension String: JSONCoding {
     public func jsonValue() -> JSON {
         return .string(self)
     }
@@ -106,7 +106,7 @@ extension String: JSONEncoding, JSONDecoding {
     }
 }
 
-extension Data: JSONEncoding, JSONDecoding {
+extension Data: JSONCoding {
     public func jsonValue() -> JSON {
         return .string(base64EncodedString())
     }
@@ -119,7 +119,7 @@ extension Data: JSONEncoding, JSONDecoding {
     }
 }
 
-extension CGPoint: JSONEncoding, JSONDecoding {
+extension CGPoint: JSONCoding {
     public func jsonValue() -> JSON {
         var json = JSON()
         
@@ -134,7 +134,7 @@ extension CGPoint: JSONEncoding, JSONDecoding {
     }
 }
 
-extension CGSize: JSONEncoding, JSONDecoding {
+extension CGSize: JSONCoding {
     public func jsonValue() -> JSON {
         var json = JSON()
         
@@ -149,7 +149,7 @@ extension CGSize: JSONEncoding, JSONDecoding {
     }
 }
 
-extension CGVector: JSONEncoding, JSONDecoding {
+extension CGVector: JSONCoding {
     public func jsonValue() -> JSON {
         var json = JSON()
         
@@ -165,7 +165,7 @@ extension CGVector: JSONEncoding, JSONDecoding {
     }
 }
 
-extension CGRect: JSONEncoding, JSONDecoding {
+extension CGRect: JSONCoding {
     public func jsonValue() -> JSON {
         var json = JSON()
         
@@ -189,7 +189,7 @@ extension CGRect: JSONEncoding, JSONDecoding {
     }
 }
 
-extension EdgeInsets: JSONEncoding, JSONDecoding {
+extension EdgeInsets: JSONCoding {
     public func jsonValue() -> JSON {
         var json = JSON()
         

@@ -183,7 +183,21 @@ extension JSON {
         default:                    return nil
         }
     }
+
+    public var asInt64: Int64? {
+        switch self {
+        case let .number(value):    return Int64(value)
+        default:                    return nil
+        }
+    }
     
+    public var asUInt64: UInt64? {
+        switch self {
+        case let .number(value):    return UInt64(value)
+        default:                    return nil
+        }
+    }
+  
     public var asFloat: Float? {
         switch self {
         case let .number(value):    return Float(value)

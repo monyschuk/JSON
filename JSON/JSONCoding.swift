@@ -26,7 +26,7 @@ public enum JSONDecodingError: Error {
 
 public struct JSONObjectMap {
     public let key:    String
-    public let values: [String: JSONCoding.Type]
+    public var values: [String: JSONCoding.Type]
     
     public init(key: String, values: [String:JSONCoding.Type]) {
         self.key = key

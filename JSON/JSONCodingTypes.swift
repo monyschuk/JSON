@@ -35,6 +35,33 @@ extension UInt: JSONCoding {
         }
     }
 }
+extension Int64: JSONCoding {
+    public func jsonValue() -> JSON {
+        return .number(Double(self))
+    }
+    
+    public init(jsonValue: JSON) throws {
+        if let value = jsonValue.asInt64 {
+            self = value
+        } else {
+            throw JSONDecodingError.unrecognizedValue(jsonValue)
+        }
+    }
+}
+
+extension UInt64: JSONCoding {
+    public func jsonValue() -> JSON {
+        return .number(Double(self))
+    }
+    
+    public init(jsonValue: JSON) throws {
+        if let value = jsonValue.asUInt64 {
+            self = value
+        } else {
+            throw JSONDecodingError.unrecognizedValue(jsonValue)
+        }
+    }
+}
 
 extension Float: JSONCoding {
     public func jsonValue() -> JSON {
